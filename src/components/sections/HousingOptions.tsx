@@ -150,8 +150,7 @@ export default function HousingOptions() {
             In Our Proposals
           </h2>
           <p className="text-xl text-[var(--text-muted)] max-w-2xl mx-auto">
-            Multiple pathways to affordable housing in one of Surrey's most
-            sought-after locations
+            Multiple pathways to affordable housing:
           </p>
         </div>
 

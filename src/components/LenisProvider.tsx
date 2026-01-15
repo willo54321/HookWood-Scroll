@@ -15,6 +15,12 @@ export default function LenisProvider({
   const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
+    // Scroll to top on page load
+    window.scrollTo(0, 0);
+    if (typeof window !== "undefined") {
+      window.history.scrollRestoration = "manual";
+    }
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -23,6 +29,7 @@ export default function LenisProvider({
     });
 
     lenisRef.current = lenis;
+    lenis.scrollTo(0, { immediate: true });
 
     lenis.on("scroll", ScrollTrigger.update);
 

@@ -12,9 +12,9 @@ export default function ProblemStatement() {
   const wordsRef = useRef<(HTMLSpanElement | null)[]>([]);
 
   const text =
-    "A whole generation has been priced out. We simply haven't built enough homes. We need your help and support to build 446 new homes including 200 affordable homes.";
+    "A whole generation has been priced out. Houses aren't being built. Support Vistry's plan for 446 new homes, including 200 affordable.";
 
-  const highlightWords = ["generation", "priced", "out", "haven't", "built", "enough", "help", "support", "446", "200", "affordable", "homes"];
+  const highlightWords = ["generation", "priced", "out", "Houses", "aren't", "being", "built", "support", "Vistry's", "446", "200", "including", "affordable", "homes"];
   const words = text.split(" ");
 
   // Clean word for matching (remove punctuation)
@@ -69,9 +69,7 @@ export default function ProblemStatement() {
                 ref={(el) => {
                   wordsRef.current[index] = el;
                 }}
-                className={`inline-block mr-[0.25em] opacity-20 ${
-                  isHighlight ? "text-[var(--teal)]" : "text-white"
-                }`}
+                className="inline-block mr-[0.25em] opacity-20 text-white"
               >
                 {word}
               </span>

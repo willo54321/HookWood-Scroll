@@ -8,7 +8,6 @@ gsap.registerPlugin(ScrollTrigger);
 
 interface Stat {
   value: string;
-  suffix: string;
   label: string;
   description: string;
 }
@@ -19,24 +18,21 @@ export default function Statistics() {
 
   const stats: Stat[] = [
     {
-      value: "45",
-      suffix: "%",
+      value: "45%",
       label: "Affordable Housing",
       description:
-        "Well above typical policy requirements—one of the highest proportions in the area",
+        "Our planning application commits to 45% affordable—well above the typical 30% requirement",
     },
     {
       value: "200",
-      suffix: "",
       label: "Affordable Homes",
       description:
-        "Shared ownership and affordable rent options for local people",
+        "Our application includes 200 shared ownership and affordable rent homes for local people",
     },
     {
       value: "2027",
-      suffix: "",
       label: "Target Completion",
-      description: "Subject to planning approval",
+      description: "If our planning application is approved, homes could be ready by 2027",
     },
   ];
 
@@ -47,13 +43,21 @@ export default function Statistics() {
 
       const blurAmount = 30;
 
-      // Set initial states
-      contents.forEach((content, index) => {
-        if (index === 0) {
-          gsap.set(content, { opacity: 1, filter: "blur(0px)" });
-        } else {
-          gsap.set(content, { opacity: 0, filter: `blur(${blurAmount}px)` });
-        }
+      // Set initial states - ALL stats start hidden
+      contents.forEach((content) => {
+        gsap.set(content, { opacity: 0, filter: `blur(${blurAmount}px)` });
+      });
+
+      // First stat fades in as section enters viewport (before pinning)
+      gsap.to(contents[0], {
+        opacity: 1,
+        filter: "blur(0px)",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 100%",
+          end: "top 50%",
+          scrub: 0.2,
+        },
       });
 
       // Create timeline with longer scroll distance for more hold time
@@ -105,7 +109,7 @@ export default function Statistics() {
   return (
     <section
       ref={sectionRef}
-      className="h-screen bg-[var(--navy)] overflow-hidden relative"
+      className="h-screen bg-[#0d9488] overflow-hidden relative"
     >
       {stats.map((stat, index) => (
         <div
@@ -117,18 +121,17 @@ export default function Statistics() {
         >
           <div className="text-center px-6 max-w-2xl mx-auto">
             {/* Big number */}
-            <div className="text-[7rem] md:text-[10rem] lg:text-[14rem] font-bold text-[var(--teal)] leading-none mb-6">
+            <div className="text-[7rem] md:text-[10rem] lg:text-[14rem] font-bold text-[var(--navy)] leading-none mb-6">
               {stat.value}
-              {stat.suffix}
             </div>
 
             {/* Label */}
-            <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            <h3 className="text-3xl md:text-4xl font-bold text-[var(--navy)] mb-4">
               {stat.label}
             </h3>
 
             {/* Description */}
-            <p className="text-lg md:text-xl text-white/60 max-w-md mx-auto">
+            <p className="text-lg md:text-xl text-[var(--navy)]/70 max-w-md mx-auto">
               {stat.description}
             </p>
           </div>

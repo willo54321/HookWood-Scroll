@@ -84,7 +84,7 @@ export default function AffordabilityChart() {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: "+=700%",
+          end: "+=500%",
           pin: true,
           scrub: 0.5,
         },
@@ -106,16 +106,27 @@ export default function AffordabilityChart() {
       tl.to(captionEls[2], { opacity: 1, duration: fadeDuration }, 0.40);
       tl.to(squares[2], { width: stats[2].size, height: stats[2].size, duration: growDuration }, 0.40);
 
-      // Phase 3 (0.60 - 0.80): Grow 2025 house price
+      // Phase 3 (0.60 - 0.70): Grow £500k BEHIND £40k to show size comparison
       tl.to(captionEls[2], { opacity: 0, duration: fadeDuration }, 0.60 - fadeDuration);
       tl.to(captionEls[3], { opacity: 1, duration: fadeDuration }, 0.60);
       tl.to(squares[3], { width: stats[3].size, height: stats[3].size, duration: growDuration }, 0.60);
 
-      // Phase 4 (0.80 - 1.0): Fade out squares, blur in conclusion
-      tl.to(captionEls[3], { opacity: 0, duration: fadeDuration }, 0.80 - fadeDuration);
-      tl.to(squares[2], { opacity: 0, duration: fadeDuration }, 0.80 - fadeDuration);
-      tl.to(squares[3], { opacity: 0, duration: fadeDuration }, 0.80 - fadeDuration);
-      tl.to(captionEls[4], { opacity: 1, filter: "blur(0px)", duration: 0.15 }, 0.80);
+      // Phase 4 (0.70): Fade out £40k after size comparison is visible
+      tl.to(squares[2], { opacity: 0, duration: fadeDuration }, 0.70);
+
+      // Phase 5 (0.75 - 0.85): Caption swaps to conclusion, £500k stays visible
+      tl.to(captionEls[3], { opacity: 0, duration: 0.08 }, 0.75);
+      tl.to(captionEls[4], { opacity: 1, filter: "blur(0px)", duration: 0.10 }, 0.75);
+
+      // Phase 6 (0.85 - 1.0): £500k square expands BEHIND text, then text fades
+      tl.to(squares[3], {
+        width: "200vmax",
+        height: "200vmax",
+        duration: 0.12,
+        ease: "power2.in"
+      }, 0.85);
+      // Text stays on top during expansion, then fades out
+      tl.to(captionEls[4], { opacity: 0, duration: 0.05 }, 0.95);
     }, sectionRef);
 
     return () => ctx.revert();
@@ -127,7 +138,7 @@ export default function AffordabilityChart() {
       className="h-screen bg-[var(--navy)] overflow-hidden relative"
     >
       {/* Left side - Dynamic text */}
-      <div className="absolute top-1/2 -translate-y-1/2 left-6 lg:left-20 max-w-[45%] z-10">
+      <div className="absolute top-1/2 -translate-y-1/2 left-6 lg:left-20 max-w-[45%] z-20">
         <div className="relative min-h-[250px]">
           {captions.map((caption, index) => (
             <div
@@ -148,12 +159,10 @@ export default function AffordabilityChart() {
               ) : (
                 <div>
                   <h2 className="text-white leading-tight mb-4">
-                    In 1990, a house cost{" "}
-                    <span className="text-[var(--teal)]">4x</span> the average salary.
+                    In 1990, a house cost <span className="font-black">4x</span> the average salary.
                   </h2>
                   <h2 className="text-white leading-tight">
-                    Today, it&apos;s{" "}
-                    <span className="text-[var(--teal)]">12.5x</span>
+                    Today, it&apos;s <span className="font-black">12.5x</span>
                   </h2>
                 </div>
               )}
@@ -186,6 +195,7 @@ export default function AffordabilityChart() {
           </div>
         );
       })}
+
     </section>
   );
 }

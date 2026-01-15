@@ -5,36 +5,53 @@ import { gsap } from "gsap";
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const headlineRef = useRef<HTMLHeadingElement>(null);
+  const wordsRef = useRef<(HTMLSpanElement | null)[]>([]);
   const subheadRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLAnchorElement>(null);
 
+  const headlineWords = ["Priced", "out", "of"];
+
   useEffect(() => {
     const ctx = gsap.context(() => {
+      const words = wordsRef.current.filter(Boolean);
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-      tl.from(headlineRef.current, {
-        y: 100,
+      // Stagger each word with a slide-up and fade
+      tl.from(words, {
+        y: 120,
         opacity: 0,
-        duration: 1.2,
+        rotationX: -90,
+        duration: 1,
+        stagger: 0.15,
+        ease: "power4.out",
       })
         .from(
-          subheadRef.current,
+          ".hero-surrey",
           {
-            y: 60,
+            scale: 0.5,
             opacity: 0,
-            duration: 1,
+            duration: 0.8,
+            ease: "back.out(1.7)",
           },
-          "-=0.6"
+          "-=0.4"
         )
         .from(
-          ctaRef.current,
+          subheadRef.current,
           {
             y: 40,
             opacity: 0,
             duration: 0.8,
           },
-          "-=0.4"
+          "-=0.3"
+        )
+        .from(
+          ctaRef.current,
+          {
+            y: 30,
+            opacity: 0,
+            duration: 0.6,
+          },
+          "-=0.3"
         );
     }, containerRef);
 
@@ -53,12 +70,18 @@ export default function Hero() {
       </div>
 
       <div className="max-w-4xl mx-auto relative z-10">
-        <h1
-          ref={headlineRef}
-          className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-8 leading-tight"
-        >
-          Priced out of{" "}
-          <span className="text-[var(--teal)]">Surrey?</span>
+        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-8 leading-tight" style={{ perspective: "1000px" }}>
+          {headlineWords.map((word, index) => (
+            <span
+              key={index}
+              ref={(el) => { wordsRef.current[index] = el; }}
+              className="inline-block mr-[0.25em]"
+              style={{ transformStyle: "preserve-3d" }}
+            >
+              {word}
+            </span>
+          ))}
+          <span className="hero-surrey inline-block text-[var(--teal)]">Surrey?</span>
         </h1>
 
         <p

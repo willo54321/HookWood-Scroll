@@ -125,11 +125,6 @@ export default function AffordabilityChart() {
       tl.to(captionEls[4], { opacity: 1, filter: "blur(0px)", duration: 0.10 }, 0.75);
 
       // Phase 6 (0.85 - 1.0): £500k square expands BEHIND text, text stays until end
-      // Hide the £500k label as it expands
-      const labels = labelsRef.current.filter(Boolean);
-      if (labels[3]) {
-        tl.to(labels[3], { opacity: 0, duration: 0.05 }, 0.75);
-      }
       tl.to(squares[3], {
         width: "200vmax",
         height: "200vmax",

@@ -12,9 +12,9 @@ export default function ProblemStatement() {
   const wordsRef = useRef<(HTMLSpanElement | null)[]>([]);
 
   const text =
-    "A whole generation has been priced out. Houses aren't being built. Support Vistry's plan for 446 new homes, including 200 affordable.";
+    "A whole generation has been priced out. Not enough houses are being built. Support Vistry's plan for 446 new homes, including 200 affordable.";
 
-  const highlightWords = ["generation", "priced", "out", "Houses", "aren't", "being", "built", "support", "Vistry's", "446", "200", "including", "affordable", "homes"];
+  const highlightWords = ["generation", "priced", "out", "Not", "enough", "houses", "being", "built", "support", "Vistry's", "446", "200", "including", "affordable", "homes"];
   const words = text.split(" ");
 
   // Clean word for matching (remove punctuation)
@@ -30,7 +30,7 @@ export default function ProblemStatement() {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: "+=150%",
+          end: "+=100%",
           pin: true,
           scrub: 0.5,
         },
@@ -53,6 +53,7 @@ export default function ProblemStatement() {
 
   return (
     <section
+      id="problem-statement"
       ref={sectionRef}
       className="h-screen bg-[var(--navy)] flex items-center justify-center px-6"
     >

@@ -65,7 +65,7 @@ export default function Statistics() {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: `+=${stats.length * 150}%`,
+          end: `+=${stats.length * 50}%`,
           pin: true,
           scrub: 0.5,
         },

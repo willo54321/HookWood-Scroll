@@ -84,7 +84,7 @@ export default function AffordabilityChart() {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: "+=500%",
+          end: "+=350%",
           pin: true,
           scrub: 0.5,
         },
@@ -118,15 +118,15 @@ export default function AffordabilityChart() {
       tl.to(captionEls[3], { opacity: 0, duration: 0.08 }, 0.75);
       tl.to(captionEls[4], { opacity: 1, filter: "blur(0px)", duration: 0.10 }, 0.75);
 
-      // Phase 6 (0.85 - 1.0): £500k square expands BEHIND text, then text fades
+      // Phase 6 (0.85 - 1.0): £500k square expands BEHIND text, text stays until end
       tl.to(squares[3], {
         width: "200vmax",
         height: "200vmax",
-        duration: 0.12,
+        duration: 0.14,
         ease: "power2.in"
       }, 0.85);
-      // Text stays on top during expansion, then fades out
-      tl.to(captionEls[4], { opacity: 0, duration: 0.05 }, 0.95);
+      // Text fades right at the end to avoid blank green
+      tl.to(captionEls[4], { opacity: 0, duration: 0.01 }, 0.99);
     }, sectionRef);
 
     return () => ctx.revert();

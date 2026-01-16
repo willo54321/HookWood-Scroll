@@ -144,7 +144,7 @@ export default function AffordabilityChart() {
       className="h-screen bg-[var(--navy)] overflow-hidden relative"
     >
       {/* Left side - Dynamic text */}
-      <div className="absolute top-[30%] md:top-1/2 -translate-y-1/2 left-4 md:left-6 lg:left-20 max-w-[60%] md:max-w-[45%] z-20">
+      <div className="absolute top-[30%] md:top-1/2 -translate-y-1/2 left-4 md:left-6 lg:left-20 max-w-[60%] md:max-w-[45%] z-50">
         <div className="relative min-h-[180px] md:min-h-[250px]">
           {captions.map((caption, index) => (
             <div

@@ -38,7 +38,7 @@ function OptionCard({ icon, title, description, index }: OptionCardProps) {
   return (
     <div
       ref={cardRef}
-      className="group bg-[var(--navy-light)] rounded-3xl p-8 md:p-10 border border-[var(--slate)] hover:border-[var(--teal)] transition-all duration-500 hover:-translate-y-2"
+      className="group bg-[var(--navy-light)] rounded-2xl md:rounded-3xl p-6 md:p-10 border border-[var(--slate)] hover:border-[var(--teal)] transition-all duration-500 hover:-translate-y-2"
     >
       <div className="w-16 h-16 bg-[var(--teal)] rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
         {icon}
@@ -143,9 +143,9 @@ export default function HousingOptions() {
   ];
 
   return (
-    <section ref={sectionRef} className="py-32 px-6 bg-[var(--navy)]">
+    <section ref={sectionRef} className="py-16 md:py-32 px-4 md:px-6 bg-[var(--navy)]">
       <div className="max-w-6xl mx-auto">
-        <div ref={headingRef} className="text-center mb-20">
+        <div ref={headingRef} className="text-center mb-10 md:mb-20">
           <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
             In Our Proposals
           </h2>
@@ -154,7 +154,7 @@ export default function HousingOptions() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-3 gap-4 md:gap-8">
           {options.map((option, index) => (
             <OptionCard
               key={option.title}

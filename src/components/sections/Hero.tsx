@@ -99,7 +99,7 @@ export default function Hero() {
         <a
           ref={ctaRef}
           href="#support-form"
-          className="inline-block bg-[var(--teal)] text-[var(--navy)] px-10 py-5 text-lg font-semibold rounded-full hover:bg-[var(--teal-light)] transition-colors duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+          className="inline-block bg-[var(--teal)] text-[var(--navy)] px-8 py-4 md:px-10 md:py-5 text-base md:text-lg font-semibold rounded-full hover:bg-[var(--teal-light)] transition-colors duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
         >
           Register Your Support
         </a>

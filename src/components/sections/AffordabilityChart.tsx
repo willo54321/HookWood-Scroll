@@ -72,6 +72,11 @@ export default function AffordabilityChart() {
       const fadeDuration = 0.05;
       const blurAmount = "20px";
 
+      // Scale factor for mobile (smaller squares on small screens)
+      const isMobile = window.innerWidth < 768;
+      const scale = isMobile ? 0.5 : 1;
+      const sizes = stats.map(s => s.size * scale);
+
       // Set initial state - hidden until scroll
       squares.forEach((sq) => {
         gsap.set(sq, { width: 0, height: 0 });
@@ -92,24 +97,24 @@ export default function AffordabilityChart() {
 
       // Phase 0 (0 - 0.20): Grow first square and show caption
       tl.to(captionEls[0], { opacity: 1, duration: fadeDuration }, 0);
-      tl.to(squares[0], { width: stats[0].size, height: stats[0].size, duration: growDuration }, 0);
+      tl.to(squares[0], { width: sizes[0], height: sizes[0], duration: growDuration }, 0);
 
       // Phase 1 (0.20 - 0.40): Grow second square, both visible
       tl.to(captionEls[0], { opacity: 0, duration: fadeDuration }, 0.20 - fadeDuration);
       tl.to(captionEls[1], { opacity: 1, duration: fadeDuration }, 0.20);
-      tl.to(squares[1], { width: stats[1].size, height: stats[1].size, duration: growDuration }, 0.20);
+      tl.to(squares[1], { width: sizes[1], height: sizes[1], duration: growDuration }, 0.20);
 
       // Phase 2 (0.40 - 0.60): Fade out 2000 squares, grow 2025 salary
       tl.to(captionEls[1], { opacity: 0, duration: fadeDuration }, 0.40 - fadeDuration);
       tl.to(squares[0], { opacity: 0, duration: fadeDuration }, 0.40 - fadeDuration);
       tl.to(squares[1], { opacity: 0, duration: fadeDuration }, 0.40 - fadeDuration);
       tl.to(captionEls[2], { opacity: 1, duration: fadeDuration }, 0.40);
-      tl.to(squares[2], { width: stats[2].size, height: stats[2].size, duration: growDuration }, 0.40);
+      tl.to(squares[2], { width: sizes[2], height: sizes[2], duration: growDuration }, 0.40);
 
       // Phase 3 (0.60 - 0.70): Grow £500k BEHIND £40k to show size comparison
       tl.to(captionEls[2], { opacity: 0, duration: fadeDuration }, 0.60 - fadeDuration);
       tl.to(captionEls[3], { opacity: 1, duration: fadeDuration }, 0.60);
-      tl.to(squares[3], { width: stats[3].size, height: stats[3].size, duration: growDuration }, 0.60);
+      tl.to(squares[3], { width: sizes[3], height: sizes[3], duration: growDuration }, 0.60);
 
       // Phase 4 (0.70): Fade out £40k after size comparison is visible
       tl.to(squares[2], { opacity: 0, duration: fadeDuration }, 0.70);
@@ -138,8 +143,8 @@ export default function AffordabilityChart() {
       className="h-screen bg-[var(--navy)] overflow-hidden relative"
     >
       {/* Left side - Dynamic text */}
-      <div className="absolute top-1/2 -translate-y-1/2 left-6 lg:left-20 max-w-[45%] z-20">
-        <div className="relative min-h-[250px]">
+      <div className="absolute top-1/2 -translate-y-1/2 left-4 md:left-6 lg:left-20 max-w-[60%] md:max-w-[45%] z-20">
+        <div className="relative min-h-[180px] md:min-h-[250px]">
           {captions.map((caption, index) => (
             <div
               key={index}
@@ -149,7 +154,7 @@ export default function AffordabilityChart() {
               className={`opacity-0 ${index > 0 ? "absolute inset-0" : ""}`}
             >
               {caption.statIndex >= 0 ? (
-                <h2 className="text-white leading-tight">
+                <h2 className="text-white leading-tight text-xl md:text-3xl lg:text-4xl">
                   {caption.text}{" "}
                   <span style={{ color: stats[caption.statIndex].color }}>
                     {stats[caption.statIndex].value}
@@ -158,10 +163,10 @@ export default function AffordabilityChart() {
                 </h2>
               ) : (
                 <div>
-                  <h2 className="text-white leading-tight mb-4">
+                  <h2 className="text-white leading-tight mb-2 md:mb-4 text-xl md:text-3xl lg:text-4xl">
                     In 1990, a house cost <span className="font-black">4x</span> the average salary.
                   </h2>
-                  <h2 className="text-white leading-tight">
+                  <h2 className="text-white leading-tight text-xl md:text-3xl lg:text-4xl">
                     Today, it&apos;s <span className="font-black">12.5x</span>
                   </h2>
                 </div>
@@ -180,15 +185,14 @@ export default function AffordabilityChart() {
             ref={(el) => {
               squaresRef.current[index] = el;
             }}
-            className="absolute bottom-0 right-0 overflow-hidden p-4"
+            className="absolute bottom-0 right-0 overflow-hidden p-2 md:p-4"
             style={{
               backgroundColor: stat.color,
               zIndex: stats.length - index,
             }}
           >
             <span
-              className="font-bold text-[var(--navy)] whitespace-nowrap"
-              style={{ fontSize: `clamp(2rem, ${stat.size * 0.2}px, ${stat.size * 0.25}px)` }}
+              className="font-bold text-[var(--navy)] whitespace-nowrap text-base md:text-2xl"
             >
               {stat.label}
             </span>

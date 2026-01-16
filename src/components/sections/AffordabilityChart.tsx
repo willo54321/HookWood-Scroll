@@ -18,6 +18,7 @@ interface StatData {
 export default function AffordabilityChart() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const squaresRef = useRef<(HTMLDivElement | null)[]>([]);
+  const labelsRef = useRef<(HTMLSpanElement | null)[]>([]);
   const captionsRef = useRef<(HTMLDivElement | null)[]>([]);
 
   const stats: StatData[] = [
@@ -124,6 +125,11 @@ export default function AffordabilityChart() {
       tl.to(captionEls[4], { opacity: 1, filter: "blur(0px)", duration: 0.10 }, 0.75);
 
       // Phase 6 (0.85 - 1.0): £500k square expands BEHIND text, text stays until end
+      // Hide the £500k label as it expands
+      const labels = labelsRef.current.filter(Boolean);
+      if (labels[3]) {
+        tl.to(labels[3], { opacity: 0, duration: 0.05 }, 0.75);
+      }
       tl.to(squares[3], {
         width: "200vmax",
         height: "200vmax",
@@ -192,6 +198,9 @@ export default function AffordabilityChart() {
             }}
           >
             <span
+              ref={(el) => {
+                labelsRef.current[index] = el;
+              }}
               className="font-bold text-[var(--navy)] whitespace-nowrap text-base md:text-2xl"
             >
               {stat.label}

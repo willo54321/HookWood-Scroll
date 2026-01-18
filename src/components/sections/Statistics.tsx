@@ -121,17 +121,17 @@ export default function Statistics() {
         >
           <div className="text-center px-6 max-w-2xl mx-auto">
             {/* Big number */}
-            <div className="text-[7rem] md:text-[10rem] lg:text-[14rem] font-bold text-[var(--navy)] leading-none mb-6">
+            <div className="text-[7rem] md:text-[10rem] lg:text-[14rem] font-bold text-white leading-none mb-6">
               {stat.value}
             </div>
 
             {/* Label */}
-            <h3 className="text-3xl md:text-4xl font-bold text-[var(--navy)] mb-4">
+            <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
               {stat.label}
             </h3>
 
             {/* Description */}
-            <p className="text-lg md:text-xl text-[var(--navy)]/70 max-w-md mx-auto">
+            <p className="text-lg md:text-xl text-white/70 max-w-md mx-auto">
               {stat.description}
             </p>
           </div>

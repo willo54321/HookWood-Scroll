@@ -33,7 +33,7 @@ export default function AffordabilityChart() {
     {
       label: "£60k",
       value: "£60,000",
-      headline: "Average house price in 1990",
+      headline: "Average house price in Surrey, 1990",
       description: "A home cost just 4x the average salary",
       color: "#5eead4",
       size: 420,
@@ -47,10 +47,10 @@ export default function AffordabilityChart() {
       size: 280,
     },
     {
-      label: "£500k",
-      value: "£500,000",
-      headline: "Average house price today",
-      description: "House prices are now 12.5x the average salary",
+      label: "£590k",
+      value: "£590,000",
+      headline: "Average house price in Surrey today",
+      description: "House prices are now 15x the average salary",
       color: "#0d9488",
       size: 720,
     },
@@ -58,9 +58,9 @@ export default function AffordabilityChart() {
 
   const captions = [
     { text: "In 1990, the average salary was", suffix: "per year", statIndex: 0 },
-    { text: "The average house price? Just", suffix: "— only 4x a yearly salary", statIndex: 1 },
+    { text: "The average Surrey house price? Just", suffix: "— only 4x a yearly salary", statIndex: 1 },
     { text: "Today, the average salary is", suffix: "per year", statIndex: 2 },
-    { text: "Today, the average house price has skyrocketed to", suffix: "", statIndex: 3 },
+    { text: "Today, the average Surrey house price has skyrocketed to", suffix: "*", statIndex: 3 },
     { text: "conclusion", suffix: "", statIndex: -1 },
   ];
 
@@ -112,7 +112,7 @@ export default function AffordabilityChart() {
       tl.to(captionEls[2], { opacity: 1, duration: fadeDuration }, 0.40);
       tl.to(squares[2], { width: sizes[2], height: sizes[2], duration: growDuration }, 0.40);
 
-      // Phase 3 (0.60 - 0.70): Grow £500k BEHIND £40k to show size comparison
+      // Phase 3 (0.60 - 0.70): Grow £590k BEHIND £40k to show size comparison
       tl.to(captionEls[2], { opacity: 0, duration: fadeDuration }, 0.60 - fadeDuration);
       tl.to(captionEls[3], { opacity: 1, duration: fadeDuration }, 0.60);
       tl.to(squares[3], { width: sizes[3], height: sizes[3], duration: growDuration }, 0.60);
@@ -120,11 +120,11 @@ export default function AffordabilityChart() {
       // Phase 4 (0.70): Fade out £40k after size comparison is visible
       tl.to(squares[2], { opacity: 0, duration: fadeDuration }, 0.70);
 
-      // Phase 5 (0.75 - 0.85): Caption swaps to conclusion, £500k stays visible
+      // Phase 5 (0.75 - 0.85): Caption swaps to conclusion, £590k stays visible
       tl.to(captionEls[3], { opacity: 0, duration: 0.08 }, 0.75);
       tl.to(captionEls[4], { opacity: 1, filter: "blur(0px)", duration: 0.10 }, 0.75);
 
-      // Phase 6 (0.85 - 1.0): £500k square expands BEHIND text, text stays until end
+      // Phase 6 (0.85 - 1.0): £590k square expands BEHIND text, text stays until end
       tl.to(squares[3], {
         width: "200vmax",
         height: "200vmax",
@@ -168,7 +168,7 @@ export default function AffordabilityChart() {
                     In 1990, a house cost <span className="font-black">4x</span> the average salary.
                   </h2>
                   <h2 className="text-white leading-tight text-xl md:text-3xl lg:text-4xl">
-                    Today, it&apos;s <span className="font-black">12.5x</span>
+                    Today, it&apos;s <span className="font-black">15x</span>
                   </h2>
                 </div>
               )}
@@ -204,6 +204,10 @@ export default function AffordabilityChart() {
         );
       })}
 
+      {/* Source citation */}
+      <p className="absolute bottom-4 left-4 md:left-6 lg:left-20 text-white/60 text-xs z-50">
+        *Source: ONS House Price Statistics, Land Registry
+      </p>
     </section>
   );
 }

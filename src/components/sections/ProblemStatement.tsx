@@ -12,9 +12,9 @@ export default function ProblemStatement() {
   const wordsRef = useRef<(HTMLSpanElement | null)[]>([]);
 
   const text =
-    "A whole generation has been priced out. Not enough houses are being built. Support Vistry's plan for 446 new homes, including 200 affordable.";
+    "A whole generation of local people has been priced out. Not enough homes are being built. Support our plan for 446 new homes—200 of them affordable, for local people.";
 
-  const highlightWords = ["generation", "priced", "out", "Not", "enough", "houses", "being", "built", "support", "Vistry's", "446", "200", "including", "affordable", "homes"];
+  const highlightWords = ["generation", "local", "people", "priced", "out", "Not", "enough", "homes", "being", "built", "support", "446", "200", "affordable"];
   const words = text.split(" ");
 
   // Clean word for matching (remove punctuation)

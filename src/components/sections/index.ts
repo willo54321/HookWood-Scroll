@@ -3,6 +3,7 @@ export { default as Hero } from "./Hero";
 export { default as ProblemStatement } from "./ProblemStatement";
 export { default as AffordabilityChart } from "./AffordabilityChart";
 export { default as Statistics } from "./Statistics";
+export { default as MapStory } from "./MapStory";
 export { default as HousingOptions } from "./HousingOptions";
 export { default as SupportForm } from "./SupportForm";
 export { default as WhatHappensNext } from "./WhatHappensNext";

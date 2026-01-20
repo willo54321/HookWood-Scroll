@@ -21,7 +21,7 @@ export default function Statistics() {
       value: "45%",
       label: "Affordable Housing",
       description:
-        "Our planning application commits to 45% affordable—well above the typical 30% requirement",
+        "Our planning application commits to 45% affordable—above Mole Valley's 40% requirement",
     },
     {
       value: "200",

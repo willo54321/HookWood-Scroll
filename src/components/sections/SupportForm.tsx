@@ -257,7 +257,7 @@ export default function SupportForm() {
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold text-[var(--navy)] mb-6">
-            Have Your Say
+            Support This Application
           </h2>
           {/* Progress bar */}
           <div className="w-full h-1 bg-[var(--navy)]/10 rounded-full overflow-hidden">
@@ -269,6 +269,14 @@ export default function SupportForm() {
           <p className="text-sm text-[var(--navy)]/50 mt-2">
             Step {currentStep + 1} of {steps.length}
           </p>
+          <a
+            href="https://vistryhookwood.co.uk/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block mt-4 text-sm text-[var(--navy)]/70 hover:text-[var(--navy)] underline transition-colors"
+          >
+            Find out more about the application
+          </a>
         </div>
 
         {/* Form card */}

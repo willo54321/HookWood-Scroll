@@ -367,7 +367,15 @@ export default function SupportForm() {
               </label>
 
               <p className="text-sm text-[var(--navy)]/50">
-                Your data will be handled in accordance with GDPR. We will only contact you about this planning application.
+                Your data will be handled in accordance with GDPR. We will only contact you about this planning application. See our{" "}
+                <a
+                  href="https://www.vistryhomes.co.uk/privacy-policy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-[var(--navy)]/70"
+                >
+                  privacy policy
+                </a>.
               </p>
 
               <button

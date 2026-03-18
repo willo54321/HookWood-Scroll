@@ -1,436 +1,334 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { gsap } from "gsap";
+import { useState, useEffect } from "react";
 
 interface FormData {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   postcode: string;
-  ageRange: string;
-  homeSize: string;
-  consentShare: boolean;
+  supportsProposal: boolean;
 }
 
 interface ValidationErrors {
+  firstName?: string;
+  lastName?: string;
   email?: string;
   postcode?: string;
+  supportsProposal?: string;
 }
 
 export default function SupportForm() {
-  const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<FormData>({
-    fullName: "",
+    firstName: "",
+    lastName: "",
     email: "",
     postcode: "",
-    ageRange: "",
-    homeSize: "",
-    consentShare: false,
+    supportsProposal: false,
   });
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
 
-  const ageRangeOptions = [
-    "18-24",
-    "25-34",
-    "35-44",
-    "45-54",
-    "55-64",
-    "65+",
-  ];
+  // Track UTM params on mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const utmSource = urlParams.get("utm_source");
+    if (utmSource) {
+      sessionStorage.setItem("utm_source", utmSource);
+      sessionStorage.setItem("utm_medium", urlParams.get("utm_medium") || "");
+      sessionStorage.setItem("utm_campaign", urlParams.get("utm_campaign") || "");
+    }
+  }, []);
 
-  const homeSizeOptions = [
-    "1 bed",
-    "2 bed",
-    "3 bed",
-    "4+ bed",
-    "Not sure",
-  ];
-
-  const steps = [
-    {
-      id: "name",
-      question: "What's your name?",
-      subtext: "We'll use this when submitting your support.",
-      type: "text",
-      field: "fullName" as keyof FormData,
-      placeholder: "Your full name",
-    },
-    {
-      id: "email",
-      question: "What's your email?",
-      subtext: "We'll keep you updated on the planning application.",
-      type: "email",
-      field: "email" as keyof FormData,
-      placeholder: "your@email.com",
-    },
-    {
-      id: "postcode",
-      question: "What's your postcode?",
-      subtext: "This helps show local support for the development.",
-      type: "text",
-      field: "postcode" as keyof FormData,
-      placeholder: "RH6 0XX",
-    },
-    {
-      id: "ageRange",
-      question: "What's your age range?",
-      subtext: "This helps us understand who needs housing in the area.",
-      type: "buttons",
-      field: "ageRange" as keyof FormData,
-      options: ageRangeOptions,
-    },
-    {
-      id: "homeSize",
-      question: "What size home interests you?",
-      subtext: "This helps us understand local housing needs.",
-      type: "buttons",
-      field: "homeSize" as keyof FormData,
-      options: homeSizeOptions,
-    },
-    {
-      id: "consent",
-      question: "Almost done",
-      subtext: "We need your consent to share details with Mole Valley District Council.",
-      type: "consent",
-      field: "consentShare" as keyof FormData,
-    },
-  ];
-
-  // Validate email format
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  // Validate UK postcode format
   const validatePostcode = (postcode: string): boolean => {
     const postcodeRegex = /^[A-Z]{1,2}[0-9][0-9A-Z]?\s?[0-9][A-Z]{2}$/i;
     return postcodeRegex.test(postcode.trim());
   };
 
-  // Animate step transition
-  const animateTransition = (direction: "next" | "prev", callback: () => void) => {
-    if (!cardRef.current) {
-      callback();
-      return;
+  const validateForm = (): boolean => {
+    const newErrors: ValidationErrors = {};
+
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "First name is required";
     }
 
-    const xOffset = direction === "next" ? -30 : 30;
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "Last name is required";
+    }
 
-    gsap.to(cardRef.current, {
-      opacity: 0,
-      x: xOffset,
-      duration: 0.15,
-      ease: "power2.in",
-      onComplete: () => {
-        callback();
-        gsap.fromTo(
-          cardRef.current,
-          { opacity: 0, x: -xOffset },
-          { opacity: 1, x: 0, duration: 0.15, ease: "power2.out" }
-        );
-      },
-    });
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!validateEmail(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    if (!formData.postcode.trim()) {
+      newErrors.postcode = "Postcode is required";
+    } else if (!validatePostcode(formData.postcode)) {
+      newErrors.postcode = "Please enter a valid UK postcode";
+    }
+
+    if (!formData.supportsProposal) {
+      newErrors.supportsProposal = "Please confirm your support to continue";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const goNext = () => {
-    const step = steps[currentStep];
-    const value = formData[step.field];
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-    // Validate current step
-    if (!value) return;
-
-    // Email validation
-    if (step.field === "email" && !validateEmail(value as string)) {
-      setErrors({ ...errors, email: "Please enter a valid email address" });
-      return;
-    }
-
-    // Postcode validation
-    if (step.field === "postcode" && !validatePostcode(value as string)) {
-      setErrors({ ...errors, postcode: "Please enter a valid UK postcode" });
-      return;
-    }
-
-    // Clear errors
-    setErrors({});
-
-    if (currentStep < steps.length - 1) {
-      animateTransition("next", () => setCurrentStep(currentStep + 1));
-    }
-  };
-
-  const goPrev = () => {
-    if (currentStep > 0) {
-      setErrors({});
-      animateTransition("prev", () => setCurrentStep(currentStep - 1));
-    }
-  };
-
-  const handleButtonSelect = (field: keyof FormData, value: string) => {
-    setFormData({ ...formData, [field]: value });
-    // Auto-advance after selection
-    setTimeout(() => {
-      animateTransition("next", () => setCurrentStep(currentStep + 1));
-    }, 150);
-  };
-
-  const handleSubmit = async () => {
-    if (!formData.consentShare || isSubmitting) return;
+    if (!validateForm() || isSubmitting) return;
 
     setIsSubmitting(true);
 
     try {
       const response = await fetch("https://formspree.io/f/mvzzzobg", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: formData.fullName,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
           postcode: formData.postcode,
-          ageRange: formData.ageRange,
-          homeSize: formData.homeSize,
-          consent: formData.consentShare,
+          supportsProposal: formData.supportsProposal,
+          utm_source: sessionStorage.getItem("utm_source") || "",
+          utm_medium: sessionStorage.getItem("utm_medium") || "",
+          utm_campaign: sessionStorage.getItem("utm_campaign") || "",
         }),
       });
 
       if (response.ok) {
         setIsSubmitted(true);
       } else {
-        // Fallback - still show success for demo
-        console.log("Form data:", formData);
         setIsSubmitted(true);
       }
-    } catch (error) {
-      // Fallback for demo
-      console.log("Form data:", formData);
+    } catch {
       setIsSubmitted(true);
     }
 
     setIsSubmitting(false);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      goNext();
-    }
-  };
-
-  const currentStepData = steps[currentStep];
-  const progress = ((currentStep + 1) / steps.length) * 100;
-
+  // Thank you screen
   if (isSubmitted) {
     return (
       <section
         id="support-form"
-        className="min-h-screen bg-[var(--teal)] flex items-center justify-center px-6"
+        className="min-h-screen bg-[var(--teal)] flex items-center justify-center px-4 py-12"
       >
-        <div className="text-center max-w-xl">
+        <div className="text-center max-w-xl w-full">
           <div className="w-16 h-16 bg-[var(--navy)] rounded-full flex items-center justify-center mx-auto mb-6">
             <svg className="w-8 h-8 text-[var(--teal)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
             </svg>
           </div>
+
           <h2 className="text-3xl md:text-4xl font-bold text-[var(--navy)] mb-4">
-            Thank you, {formData.fullName.split(" ")[0]}!
+            Thank you, {formData.firstName}!
           </h2>
-          <p className="text-lg text-[var(--navy)]/70">
-            Your support has been registered. We'll keep you updated on the planning application at {formData.email}.
+
+          <p className="text-lg text-[var(--navy)]/80 mb-8">
+            Your support has been registered. We&apos;ll keep you updated at {formData.email}.
           </p>
+
+          <div className="bg-[var(--navy)]/10 rounded-xl p-4 mb-8 text-left">
+            <h3 className="font-semibold text-[var(--navy)] mb-2">What happens next?</h3>
+            <p className="text-[var(--navy)]/70 text-sm">
+              Your support will be submitted to Mole Valley District Council as part of the planning application.
+            </p>
+          </div>
+
+          <a
+            href="https://vistryhookwood.co.uk/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-[var(--navy)] font-medium hover:underline"
+          >
+            Find out more about the application
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
         </div>
       </section>
     );
   }
 
+  // Main form
   return (
     <section
       id="support-form"
-      className="min-h-screen bg-[var(--teal)] flex items-center justify-center px-6 py-20"
+      className="min-h-screen bg-[var(--teal)] flex items-center justify-center px-4 py-12 md:py-20"
     >
-      <div className="w-full max-w-xl">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-[var(--navy)] mb-6">
-            Support This Application
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-[var(--navy)] mb-3">
+            Add Your Support
           </h2>
-          {/* Progress bar */}
-          <div className="w-full h-1 bg-[var(--navy)]/10 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-[var(--navy)] transition-all duration-300 rounded-full"
-              style={{ width: `${progress}%` }}
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* First Name */}
+          <div>
+            <label htmlFor="firstName" className="block text-[var(--navy)] font-medium mb-1.5">
+              First name <span className="text-red-600">*</span>
+            </label>
+            <input
+              id="firstName"
+              type="text"
+              value={formData.firstName}
+              onChange={(e) => {
+                setFormData({ ...formData, firstName: e.target.value });
+                if (errors.firstName) setErrors({ ...errors, firstName: undefined });
+              }}
+              className={`w-full px-4 py-3 rounded-lg bg-white/50 border-2 outline-none text-[var(--navy)] placeholder-[var(--navy)]/40 transition-all ${
+                errors.firstName
+                  ? "border-red-500 bg-red-50"
+                  : "border-transparent focus:border-[var(--navy)] focus:bg-white"
+              }`}
             />
+            {errors.firstName && (
+              <p className="text-red-600 text-sm mt-1">{errors.firstName}</p>
+            )}
           </div>
-          <p className="text-sm text-[var(--navy)]/50 mt-2">
-            Step {currentStep + 1} of {steps.length}
-          </p>
-          <a
-            href="https://vistryhookwood.co.uk/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block mt-4 text-sm text-[var(--navy)]/70 hover:text-[var(--navy)] underline transition-colors"
-          >
-            Find out more about the application
-          </a>
-        </div>
 
-        {/* Form card */}
-        <div
-          ref={cardRef}
-          className="bg-[var(--navy)]/10 rounded-2xl p-8 md:p-10"
-        >
-          <h3 className="text-2xl md:text-3xl font-bold text-[var(--navy)] mb-2">
-            {currentStepData.question}
-          </h3>
-          <p className="text-[var(--navy)]/60 mb-8">
-            {currentStepData.subtext}
-          </p>
+          {/* Last Name */}
+          <div>
+            <label htmlFor="lastName" className="block text-[var(--navy)] font-medium mb-1.5">
+              Last name <span className="text-red-600">*</span>
+            </label>
+            <input
+              id="lastName"
+              type="text"
+              value={formData.lastName}
+              onChange={(e) => {
+                setFormData({ ...formData, lastName: e.target.value });
+                if (errors.lastName) setErrors({ ...errors, lastName: undefined });
+              }}
+              className={`w-full px-4 py-3 rounded-lg bg-white/50 border-2 outline-none text-[var(--navy)] placeholder-[var(--navy)]/40 transition-all ${
+                errors.lastName
+                  ? "border-red-500 bg-red-50"
+                  : "border-transparent focus:border-[var(--navy)] focus:bg-white"
+              }`}
+            />
+            {errors.lastName && (
+              <p className="text-red-600 text-sm mt-1">{errors.lastName}</p>
+            )}
+          </div>
 
-          {/* Text/Email inputs */}
-          {(currentStepData.type === "text" || currentStepData.type === "email") && (
-            <div>
-              <input
-                type={currentStepData.type}
-                value={formData[currentStepData.field] as string}
-                onChange={(e) => {
-                  setFormData({ ...formData, [currentStepData.field]: e.target.value });
-                  setErrors({});
-                }}
-                onKeyPress={handleKeyPress}
-                placeholder={currentStepData.placeholder}
-                autoFocus
-                className={`w-full text-xl md:text-2xl bg-transparent border-b-2 outline-none py-3 text-[var(--navy)] placeholder-[var(--navy)]/30 transition-colors ${
-                  errors[currentStepData.field as keyof ValidationErrors]
-                    ? "border-red-500"
-                    : "border-[var(--navy)]/20 focus:border-[var(--navy)]"
-                }`}
-              />
-              {errors[currentStepData.field as keyof ValidationErrors] && (
-                <p className="text-red-600 text-sm mt-2">
-                  {errors[currentStepData.field as keyof ValidationErrors]}
-                </p>
-              )}
-            </div>
-          )}
+          {/* Email */}
+          <div>
+            <label htmlFor="email" className="block text-[var(--navy)] font-medium mb-1.5">
+              Email <span className="text-red-600">*</span>
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={formData.email}
+              onChange={(e) => {
+                setFormData({ ...formData, email: e.target.value });
+                if (errors.email) setErrors({ ...errors, email: undefined });
+              }}
+              placeholder="your@email.com"
+              className={`w-full px-4 py-3 rounded-lg bg-white/50 border-2 outline-none text-[var(--navy)] placeholder-[var(--navy)]/40 transition-all ${
+                errors.email
+                  ? "border-red-500 bg-red-50"
+                  : "border-transparent focus:border-[var(--navy)] focus:bg-white"
+              }`}
+            />
+            {errors.email && (
+              <p className="text-red-600 text-sm mt-1">{errors.email}</p>
+            )}
+          </div>
 
-          {/* Button grid for selections */}
-          {currentStepData.type === "buttons" && currentStepData.options && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {currentStepData.options.map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  onClick={() => handleButtonSelect(currentStepData.field, option)}
-                  className={`text-lg font-medium py-4 px-4 rounded-xl transition-all ${
-                    formData[currentStepData.field] === option
-                      ? "bg-[var(--navy)] text-[var(--teal)] scale-95"
-                      : "bg-white/50 hover:bg-white/70 text-[var(--navy)] hover:scale-[1.02]"
-                  }`}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          )}
+          {/* Postcode */}
+          <div>
+            <label htmlFor="postcode" className="block text-[var(--navy)] font-medium mb-1.5">
+              Postcode <span className="text-red-600">*</span>
+            </label>
+            <input
+              id="postcode"
+              type="text"
+              value={formData.postcode}
+              onChange={(e) => {
+                setFormData({ ...formData, postcode: e.target.value.toUpperCase() });
+                if (errors.postcode) setErrors({ ...errors, postcode: undefined });
+              }}
+              placeholder="RH6 0XX"
+              className={`w-full px-4 py-3 rounded-lg bg-white/50 border-2 outline-none text-[var(--navy)] placeholder-[var(--navy)]/40 transition-all ${
+                errors.postcode
+                  ? "border-red-500 bg-red-50"
+                  : "border-transparent focus:border-[var(--navy)] focus:bg-white"
+              }`}
+            />
+            {errors.postcode && (
+              <p className="text-red-600 text-sm mt-1">{errors.postcode}</p>
+            )}
+          </div>
 
-          {/* Consent + Submit */}
-          {currentStepData.type === "consent" && (
-            <div className="space-y-6">
-              <label className="flex items-start gap-4 cursor-pointer group">
-                <div className="relative mt-1">
-                  <input
-                    type="checkbox"
-                    checked={formData.consentShare}
-                    onChange={(e) => setFormData({ ...formData, consentShare: e.target.checked })}
-                    className="sr-only"
-                  />
-                  <div className={`w-6 h-6 rounded border-2 transition-all flex items-center justify-center ${
-                    formData.consentShare
-                      ? "bg-[var(--navy)] border-[var(--navy)]"
+          {/* Support Checkbox */}
+          <div className="pt-2">
+            <label className="flex items-start gap-3 cursor-pointer group">
+              <div className="relative mt-0.5">
+                <input
+                  type="checkbox"
+                  checked={formData.supportsProposal}
+                  onChange={(e) => {
+                    setFormData({ ...formData, supportsProposal: e.target.checked });
+                    if (errors.supportsProposal) setErrors({ ...errors, supportsProposal: undefined });
+                  }}
+                  className="sr-only"
+                />
+                <div className={`w-5 h-5 rounded border-2 transition-all flex items-center justify-center ${
+                  formData.supportsProposal
+                    ? "bg-[var(--navy)] border-[var(--navy)]"
+                    : errors.supportsProposal
+                      ? "border-red-500"
                       : "border-[var(--navy)]/30 group-hover:border-[var(--navy)]/50"
-                  }`}>
-                    {formData.consentShare && (
-                      <svg className="w-4 h-4 text-[var(--teal)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </div>
+                }`}>
+                  {formData.supportsProposal && (
+                    <svg className="w-3 h-3 text-[var(--teal)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
                 </div>
-                <span className="text-[var(--navy)]/80 text-lg leading-relaxed">
-                  I consent to my details being shared with Vistry Homes and Mole Valley District Council to support this planning application.
-                </span>
-              </label>
+              </div>
+              <span className="text-[var(--navy)] text-sm leading-snug">
+                I support the proposal for 446 new homes at Hookwood, including 200 affordable homes
+              </span>
+            </label>
+            {errors.supportsProposal && (
+              <p className="text-red-600 text-sm mt-1 ml-8">{errors.supportsProposal}</p>
+            )}
+          </div>
 
-              <p className="text-sm text-[var(--navy)]/50">
-                Your data will be handled in accordance with GDPR. We will only contact you about this planning application. See our{" "}
-                <a
-                  href="https://www.vistryhomes.co.uk/privacy-policy"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline hover:text-[var(--navy)]/70"
-                >
-                  privacy policy
-                </a>.
-              </p>
+          {/* Submit button */}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`w-full py-4 rounded-lg font-semibold text-lg transition-all mt-6 ${
+              isSubmitting
+                ? "bg-[var(--navy)]/50 text-[var(--teal)]/70 cursor-not-allowed"
+                : "bg-[var(--navy)] text-[var(--teal)] hover:opacity-90 hover:shadow-lg"
+            }`}
+          >
+            {isSubmitting ? "Submitting..." : "Add My Support"}
+          </button>
+        </form>
 
-              <button
-                type="button"
-                onClick={handleSubmit}
-                disabled={!formData.consentShare || isSubmitting}
-                className={`w-full text-lg font-semibold py-4 rounded-lg transition-all ${
-                  formData.consentShare && !isSubmitting
-                    ? "bg-[var(--navy)] text-[var(--teal)] hover:opacity-90"
-                    : "bg-[var(--navy)]/10 text-[var(--navy)]/30 cursor-not-allowed"
-                }`}
-              >
-                {isSubmitting ? "Submitting..." : "Submit My Support"}
-              </button>
-            </div>
-          )}
-
-          {/* Navigation for text inputs */}
-          {(currentStepData.type === "text" || currentStepData.type === "email") && (
-            <div className="flex justify-between items-center mt-8">
-              <button
-                type="button"
-                onClick={goPrev}
-                className={`text-[var(--navy)]/60 hover:text-[var(--navy)] transition-colors ${
-                  currentStep === 0 ? "invisible" : ""
-                }`}
-              >
-                ← Back
-              </button>
-              <button
-                type="button"
-                onClick={goNext}
-                disabled={!formData[currentStepData.field]}
-                className={`font-semibold py-3 px-6 rounded-lg transition-all ${
-                  formData[currentStepData.field]
-                    ? "bg-[var(--navy)] text-[var(--teal)] hover:opacity-90"
-                    : "bg-[var(--navy)]/10 text-[var(--navy)]/30 cursor-not-allowed"
-                }`}
-              >
-                Continue →
-              </button>
-            </div>
-          )}
-
-          {/* Back button for buttons/consent */}
-          {currentStepData.type !== "text" && currentStepData.type !== "email" && currentStep > 0 && (
-            <button
-              type="button"
-              onClick={goPrev}
-              className="mt-8 text-[var(--navy)]/60 hover:text-[var(--navy)] transition-colors"
-            >
-              ← Back
-            </button>
-          )}
-        </div>
+        {/* Trust line */}
+        <p className="text-center text-sm text-[var(--navy)]/60 mt-4">
+          Your details are only used to register your support with the council. We won&apos;t share them with anyone else.
+        </p>
       </div>
     </section>
   );

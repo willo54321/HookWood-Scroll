@@ -30,16 +30,16 @@ export default function ScrollProgress() {
         percentRef.current.textContent = `${percentage}%`;
       }
 
-      // Update message based on progress
+      // Update message based on progress - clarified as page progress
       if (messageRef.current) {
         if (percentage >= 95) {
-          messageRef.current.textContent = "Sign up! →";
+          messageRef.current.textContent = "Add your support →";
         } else if (percentage >= 75) {
-          messageRef.current.textContent = "Almost there...";
+          messageRef.current.textContent = "Form below →";
         } else if (percentage >= 40) {
-          messageRef.current.textContent = "Keep going...";
+          messageRef.current.textContent = "Page progress";
         } else {
-          messageRef.current.textContent = "Scroll to sign up →";
+          messageRef.current.textContent = "Page progress";
         }
       }
 
